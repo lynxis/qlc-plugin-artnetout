@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+class ArtNetOut;
+
 namespace Ui {
     class ConfigureArtNetOutDialog;
 }
@@ -15,8 +17,13 @@ public:
     explicit ConfigureArtNetOutDialog(ArtNetOut* plugin, QWidget *parent = 0);
     ~ConfigureArtNetOutDialog();
     QString ip();
+    void updateStatus();
+
+private slots:
+    void activateButtonClicked();
 private:
     Ui::ConfigureArtNetOutDialog *ui;
+    ArtNetOut* m_plugin;
 };
 
 #endif // CONFIGUREARTNETOUTDIALOG_H

@@ -54,6 +54,7 @@ void ArtNetOut::init()
 {
   m_thr = NULL;
   m_configDir = QString("~/.qlc/");
+  m_ip = "";
 }
 
 ArtNetOut::~ArtNetOut()
@@ -67,21 +68,22 @@ QString ArtNetOut::name()
 }
 
 /* start the thread */
-int ArtNetOut::open()
+void ArtNetOut::open(quint32 output)
 {
+  Q_UNUSED(output);
   printf("open\n") ;
   // check this for error
   m_thr = new ArtNetThread(m_ip) ;
   m_thr->start() ;
-  return 0;
 }
 
 /* terminate the thread */
-int ArtNetOut::close()
+void ArtNetOut::close(quint32 output)
 {
+  Q_UNUSED(output);
   printf("close\n") ;
   if(m_thr == NULL)
-	return -1 ;
+	return ;
 
   if(m_thr->isRunning()) {
     m_thr->stop() ;
@@ -91,7 +93,7 @@ int ArtNetOut::close()
 
   delete m_thr ;
   m_thr = NULL ;
-  return 0;
+  return ;
 }
 
 /* check if thread is running */
@@ -235,6 +237,17 @@ void ArtNetOut::activate()
     emit configurationChanged();
 }
 
+QStringList ArtNetOut::outputs() {
+    QStringList outputs;
+    outputs << QString("artnet");
+    return outputs;
+}
+
+QString ArtNetOut::infoText(quint32 output) {
+    Q_UNUSED(output);
+    return QString("bla bla bla");
+}
+
 
 /* Write an universe out to artnet
  *
@@ -256,3 +269,7 @@ void ArtNetOut::outputDMX(quint32 output, const QByteArray& universe)
 
   return ;
 }
+
+
+Q_EXPORT_PLUGIN2(artnetout, ArtNetOut)
+

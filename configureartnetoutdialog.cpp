@@ -1,21 +1,23 @@
 #include "configureartnetoutdialog.h"
 #include "ui_configureartnetoutdialog.h"
 
-ConfigureArtNetOutDialog::ConfigureArtNetOutDialog(ArtNetOut* plugin, QWidget *parent) :
+#include "artnetout.h"
+
+ConfigureArtNetOutDialog::ConfigureArtNetOutDialog(ArtNetOut * plugin, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ConfigureartnetoutDialog)
+    ui(new Ui::ConfigureArtNetOutDialog)
 {
-    ASSERT(plugin != NULL);
     m_plugin = plugin;
 
     ui->setupUi(this);
 
     if (plugin->m_ip == QString("")) {
-        printf("string is empty\n") ;
-        m_deviceEdit->setText("");
+        qDebug("string is empty\n") ;
+        ui-> m_deviceEdit->setText("");
     } else {
-        m_deviceEdit->setText(plugin->m_ip);
+        ui->m_deviceEdit->setText(plugin->m_ip);
     }
+    connect(ui->m_activate, SIGNAL(clicked()), this, SLOT(activateButtonClicked()));
 
     updateStatus();
 }
@@ -25,8 +27,31 @@ ConfigureArtNetOutDialog::~ConfigureArtNetOutDialog()
     delete ui;
 }
 
+void ConfigureArtNetOutDialog::activateButtonClicked() {
+    m_plugin->m_ip = ui->m_deviceEdit->text();
+    m_plugin->activate();
+
+    ::usleep(10);  // Allow the activation signal get passed to doc
+
+    updateStatus();
+}
 QString ConfigureArtNetOutDialog::ip()
 {
-  return m_deviceEdit->text();
+  return ui->m_deviceEdit->text();
 }
 
+void ConfigureArtNetOutDialog::updateStatus()
+{
+  if (m_plugin->isOpen())
+    {
+      ui->m_statusLabel->setText("Active");
+      ui->m_deviceEdit->setEnabled(false);
+      ui->m_activate->setEnabled(false);
+    }
+  else
+    {
+      ui->m_statusLabel->setText("Not Active");
+      ui->m_deviceEdit->setEnabled(true);
+      ui->m_activate->setEnabled(true);
+    }
+}

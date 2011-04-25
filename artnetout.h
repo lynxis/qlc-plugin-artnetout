@@ -23,7 +23,6 @@
 #ifndef ARTNETOUT_H
 #define ARTNETOUT_H
 
-#include "qlcoutplugin.h"
 #include "artnetthread.h"
 
 #include <qstring.h>
@@ -31,9 +30,11 @@
 
 #include <QDomDocument>
 
+#include "qlcoutplugin.h"
+
 #define CHANNELS 512
 
-class ConfigureArtNetOut;
+class ConfigureArtNetOutDialog;
 class QPoint;
 
 class ArtNetOut : public QLCOutPlugin
@@ -41,7 +42,7 @@ class ArtNetOut : public QLCOutPlugin
   Q_OBJECT
   Q_INTERFACES(QLCOutPlugin)
 
-  friend class ConfigureArtNetOut;
+  friend class ConfigureArtNetOutDialog;
 
  public:
   virtual ~ArtNetOut();
@@ -50,8 +51,8 @@ class ArtNetOut : public QLCOutPlugin
   void init();
   QString name();
 
-  int open();
-  int close();
+  void open(quint32 output = 0);
+  void close(quint32 output = 0);
   bool isOpen();
   QString infoText();
 

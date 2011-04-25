@@ -7,21 +7,21 @@ TARGET   = artnetout
 INCLUDEPATH += ../interfaces
 CONFIG      += plugin
 QT          += xml
+unix:CONFIG += link_pkgconfig
+unix:PKGCONFIG += libartnet
 
 # Input
-HEADERS += artnetout.h \
-            artnetthread.h \
-            configureartnetout.h \
-            ../interfaces/qlcoutplugin.h \
-    configureartnetoutdialog.h
+HEADERS += artnetthread.h \
+    configureartnetoutdialog.h \
+    artnetout.h
 
-FORMS += configureartnetout.ui \
-    configureartnetoutdialog.ui
-SOURCES += artnetout.cpp \
-            artnetthread.cpp \
-            configureartnetout.cpp \
-    configureartnetoutdialog.cpp
+FORMS += configureartnetoutdialog.ui
 
+SOURCES += artnetthread.cpp \
+    configureartnetoutdialog.cpp \
+    artnetout.cpp
+
+HEADERS += ../interfaces/qlcoutplugin.h
 
 PRO_FILE = artnetout.pro
 

@@ -86,7 +86,7 @@ void ArtNetThread::run()
 
       tv.tv_sec = 1;		// one second timeout sounds ok
       tv.tv_usec = 0;
-	 
+	  // TODO dont run faster than ...
       switch (select(maxfd+1, &fds, NULL, NULL, &tv) )
         {
           case 0:
