@@ -54,7 +54,6 @@ class ArtNetOut : public QLCOutPlugin
   void open(quint32 output = 0);
   void close(quint32 output = 0);
   bool isOpen();
-  QString infoText();
 
   // configure
   int setConfigDirectory(QString dir);

@@ -122,39 +122,42 @@ void ArtNetOut::configure()
 
 
 /* return info string (allows html) */
-QString ArtNetOut::infoText()
-{
-  QString t;
-  QString str = QString::null;
-  str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
-  str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR>");
-  str += QString("<TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">");
-  str += name() + QString("</FONT></TD></TR></TABLE>");
-  str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
-  str += QString("<TR>\n");
-  str += QString("<TD><B>Version</B></TD>");
-  str += QString("<TD>");
-  str += QString("</TD>");
-  str += QString("</TR>");
+QString ArtNetOut::infoText(quint32 output) {
+    if (output == QLCOutPlugin::invalidOutput()) {
+        // plugin info
+        QString t;
+        QString str = QString::null;
+        str += QString("<HTML><HEAD><TITLE>Plugin Info</TITLE></HEAD><BODY>");
+        str += QString("<TABLE COLS=\"1\" WIDTH=\"100%\"><TR>");
+        str += QString("<TD BGCOLOR=\"black\"><FONT COLOR=\"white\" SIZE=\"5\">");
+        str += name() + QString("</FONT></TD></TR></TABLE>");
+        str += QString("<TABLE COLS=\"2\" WIDTH=\"100%\">");
+        str += QString("<TR>\n");
+        str += QString("<TD><B>Version</B></TD>");
+        str += QString("<TD>");
+        str += QString("</TD>");
+        str += QString("</TR>");
 
-  str += QString("<TR>\n");
-  str += QString("<TD><B>Status</B></TD>");
-  str += QString("<TD>");
-  if (isOpen() == true)
-    {
-      str += QString("<I>Active</I></TD>");
+        str += QString("<TR>\n");
+        str += QString("<TD><B>Status</B></TD>");
+        str += QString("<TD>");
+        if (isOpen() == true)
+        {
+            str += QString("<I>Active</I></TD>");
+        }
+        else
+        {
+            str += QString("Not Active</TD>");
+        }
+        str += QString("</TR>");
+
+        str += QString("</TR>");
+        str += QString("</TABLE>");
+        str += QString("</BODY></HTML>");
+        return str;
     }
-  else
-    {
-      str += QString("Not Active</TD>");
-    }
-  str += QString("</TR>");
-
-  str += QString("</TR>");
-  str += QString("</TABLE>");
-  str += QString("</BODY></HTML>");
-
-  return str;
+    // output info
+    return QString("artnet output");
 }
 
 /* set config directory */
@@ -242,12 +245,6 @@ QStringList ArtNetOut::outputs() {
     outputs << QString("artnet");
     return outputs;
 }
-
-QString ArtNetOut::infoText(quint32 output) {
-    Q_UNUSED(output);
-    return QString("bla bla bla");
-}
-
 
 /* Write an universe out to artnet
  *
