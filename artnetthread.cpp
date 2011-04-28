@@ -30,41 +30,55 @@
 //
 // Class implementation
 //
-ArtNetThread::ArtNetThread(QString ip)
-{
-  // we prob want to make this configurable at some stage
+
+int ArtNetThread::stopNode() {
+    qDebug("closing node\n");
+    artnet_stop(m_node);
+    qDebug("destorying node\n");
+    artnet_destroy(m_node);
+
+    return 0;
+}
+
+int ArtNetThread::startNode() {
+   // we prob want to make this configurable at some stage
   int port_addr = 0 ;
 
   // new artnet node
-  if (ip == QString(""))
-    m_node = artnet_new(NULL, 1) ;  
+  if (m_ip == QString(""))
+    m_node = artnet_new(NULL, 0) ;
   else
-    m_node = artnet_new(ip.toAscii(), 1) ;
-  
-  // we need to return an error condition here 
-  if ( m_node == NULL) 
-    return ;
+    m_node = artnet_new(m_ip.toAscii(), 0) ;
+
+  // we need to return an error condition here
+  if ( m_node == NULL)
+    return -1;
 
   artnet_set_node_type(m_node, ARTNET_SRV) ;
   artnet_set_short_name(m_node, "QLC") ;
   artnet_set_long_name(m_node,"Q Light Controller with libartnet") ;
+  // artnet subclassing - has nothing to do with Ip !
   artnet_set_subnet_addr(m_node, 0) ;
 
   artnet_set_port_type(m_node, 0, ARTNET_ENABLE_INPUT, ARTNET_PORT_DMX) ;
   artnet_set_port_addr(m_node, 0, ARTNET_INPUT_PORT, port_addr);
 
-  artnet_start(m_node) ;
+  return artnet_start(m_node) ;
+}
+
+ArtNetThread::ArtNetThread(QString ip): m_ip(ip), m_newgw(ip)
+{
+    startNode();
 }
 
 ArtNetThread::~ArtNetThread()
 {
-  artnet_stop(m_node) ;
+    stopNode();
+}
 
-  // free node
- printf("destorying node\n") ;
- artnet_destroy(m_node) ;
- printf("done destory\n") ;
 
+void ArtNetThread::setIp(QString ip) {
+    m_newgw = ip;
 }
 
 /* Attempt to open dmx device */
@@ -78,6 +92,11 @@ void ArtNetThread::run()
   
   while (loop) 
     {
+        if(m_ip != m_newgw) {
+            m_ip = m_newgw;
+            stopNode();
+            startNode();
+        }
       FD_ZERO(&fds);
       maxfd = artnet_set_fdset(m_node, &fds) ;
       FD_SET(m_sd[1], &fds) ;
@@ -109,9 +128,9 @@ void ArtNetThread::run()
                     printf("artnetout: Read error %s\n", strerror(errno) ) ;
 
                   // send artnet packet
-				  printf("write dmx %i\n", r ) ;
+//				  printf("write dmx %i\n", r ) ;
                   artnet_send_dmx(m_node, 0, 512, buf) ;
-				  printf("after write dmx\n") ;
+        //			  printf("after write dmx\n") ;
                 }
               else if (FD_ISSET(artnet_get_sd(m_node), &fds) )
                 {

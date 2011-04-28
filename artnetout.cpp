@@ -267,6 +267,13 @@ void ArtNetOut::outputDMX(quint32 output, const QByteArray& universe)
   return ;
 }
 
+void ArtNetOut::newIp(QString ip) {
+    m_ip = ip;
+    if (m_thr != NULL) {
+        m_thr->setIp(ip);
+    }
+}
+
 
 Q_EXPORT_PLUGIN2(artnetout, ArtNetOut)
 

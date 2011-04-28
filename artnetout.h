@@ -71,8 +71,8 @@ class ArtNetOut : public QLCOutPlugin
  signals:
   void configurationChanged();
 
- private slots:
-  void slotContextMenuCallback(int item);
+ public slots:
+  void newIp(QString ip);
 
  private:
   void activate();

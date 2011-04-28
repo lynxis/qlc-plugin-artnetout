@@ -17,7 +17,7 @@ ConfigureArtNetOutDialog::ConfigureArtNetOutDialog(ArtNetOut * plugin, QWidget *
     } else {
         ui->m_deviceEdit->setText(plugin->m_ip);
     }
-    connect(ui->m_activate, SIGNAL(clicked()), this, SLOT(activateButtonClicked()));
+    connect(ui->buttonBox , SIGNAL(accepted()), this, SLOT(okButtonClicked()));
 
     updateStatus();
 }
@@ -27,14 +27,10 @@ ConfigureArtNetOutDialog::~ConfigureArtNetOutDialog()
     delete ui;
 }
 
-void ConfigureArtNetOutDialog::activateButtonClicked() {
-    m_plugin->m_ip = ui->m_deviceEdit->text();
-    m_plugin->activate();
-
-    ::usleep(10);  // Allow the activation signal get passed to doc
-
-    updateStatus();
+void ConfigureArtNetOutDialog::okButtonClicked() {
+    m_plugin->newIp(ui->m_deviceEdit->text());
 }
+
 QString ConfigureArtNetOutDialog::ip()
 {
   return ui->m_deviceEdit->text();
@@ -44,14 +40,10 @@ void ConfigureArtNetOutDialog::updateStatus()
 {
   if (m_plugin->isOpen())
     {
-      ui->m_statusLabel->setText("Active");
-      ui->m_deviceEdit->setEnabled(false);
-      ui->m_activate->setEnabled(false);
+      ui->m_statusLabel->setText("Art-Net is Active");
     }
   else
     {
-      ui->m_statusLabel->setText("Not Active");
-      ui->m_deviceEdit->setEnabled(true);
-      ui->m_activate->setEnabled(true);
+      ui->m_statusLabel->setText("Art-Net is InActive");
     }
 }

@@ -32,19 +32,23 @@ class ArtNetThread : public QThread
 {
 
  public:
-  ArtNetThread(QString ip);
+  ArtNetThread(QString ip = "");
   ~ArtNetThread();
 
   // methods
   virtual void run();
   void start ( Priority priority = InheritPriority) ;
   void stop() ;
+  void setIp(QString ip);
   int write_dmx(uint8_t *data , int channels) ;
 
  private:
+  int startNode();
+  int stopNode();
   int m_sd[2] ;
-  artnet_node m_node ;
-
+  artnet_node m_node;
+  QString m_ip;
+  QString m_newgw;
 };
 
 #endif

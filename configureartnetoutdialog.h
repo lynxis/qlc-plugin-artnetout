@@ -20,7 +20,7 @@ public:
     void updateStatus();
 
 private slots:
-    void activateButtonClicked();
+    void okButtonClicked();
 private:
     Ui::ConfigureArtNetOutDialog *ui;
     ArtNetOut* m_plugin;
