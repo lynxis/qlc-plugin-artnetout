@@ -49,6 +49,7 @@ class ArtNetThread : public QThread
   artnet_node m_node;
   QString m_ip;
   QString m_newgw;
+  bool m_configChanged;
 };
 
 #endif

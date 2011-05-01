@@ -43,6 +43,7 @@ int ArtNetThread::stopNode() {
 int ArtNetThread::startNode() {
    // we prob want to make this configurable at some stage
   int port_addr = 0 ;
+  m_configChanged = false;
 
   // new artnet node
   if (m_ip == QString(""))
@@ -66,7 +67,7 @@ int ArtNetThread::startNode() {
   return artnet_start(m_node) ;
 }
 
-ArtNetThread::ArtNetThread(QString ip): m_ip(ip), m_newgw(ip)
+ArtNetThread::ArtNetThread(QString ip): m_ip(ip), m_newgw(ip), m_configChanged(false)
 {
     startNode();
 }
@@ -78,7 +79,8 @@ ArtNetThread::~ArtNetThread()
 
 
 void ArtNetThread::setIp(QString ip) {
-    m_newgw = ip;
+    m_ip = ip;
+    m_configChanged = true;
 }
 
 /* Attempt to open dmx device */
@@ -92,8 +94,7 @@ void ArtNetThread::run()
   
   while (loop) 
     {
-        if(m_ip != m_newgw) {
-            m_ip = m_newgw;
+        if(m_configChanged) {
             stopNode();
             startNode();
         }
