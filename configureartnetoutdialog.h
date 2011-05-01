@@ -5,8 +5,9 @@
 
 class ArtNetOut;
 
-namespace Ui {
-    class ConfigureArtNetOutDialog;
+namespace Ui
+{
+class ConfigureArtNetOutDialog;
 }
 
 class ConfigureArtNetOutDialog : public QDialog

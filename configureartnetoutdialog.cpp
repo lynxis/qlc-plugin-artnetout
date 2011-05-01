@@ -27,23 +27,21 @@ ConfigureArtNetOutDialog::~ConfigureArtNetOutDialog()
     delete ui;
 }
 
-void ConfigureArtNetOutDialog::okButtonClicked() {
+void ConfigureArtNetOutDialog::okButtonClicked()
+{
     m_plugin->newIp(ui->m_deviceEdit->text());
 }
 
 QString ConfigureArtNetOutDialog::ip()
 {
-  return ui->m_deviceEdit->text();
+    return ui->m_deviceEdit->text();
 }
 
 void ConfigureArtNetOutDialog::updateStatus()
 {
-  if (m_plugin->isOpen())
-    {
-      ui->m_statusLabel->setText("Art-Net is Active");
-    }
-  else
-    {
-      ui->m_statusLabel->setText("Art-Net is InActive");
+    if (m_plugin->isOpen()) {
+        ui->m_statusLabel->setText("Art-Net is Active");
+    } else {
+        ui->m_statusLabel->setText("Art-Net is InActive");
     }
 }

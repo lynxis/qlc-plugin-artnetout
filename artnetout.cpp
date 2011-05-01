@@ -1,20 +1,20 @@
 /*
   Q Light Controller
   artnetout.cpp
-  
+
   Copyright (c) Heikki Junnila
                 Simon Newton
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   Version 2 as published by the Free Software Foundation.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details. The license is
   in the file "COPYING".
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -53,10 +53,10 @@ static QMutex _mutex;
 //
 void ArtNetOut::init()
 {
-  m_thr = NULL;
-  m_configDir = QString(QDir::homePath()).append("/.qlc/");
-  m_ip = "";
-  loadSettings();
+    m_thr = NULL;
+    m_configDir = QString(QDir::homePath()).append("/.qlc/");
+    m_ip = "";
+    loadSettings();
 }
 
 ArtNetOut::~ArtNetOut()
@@ -72,58 +72,60 @@ QString ArtNetOut::name()
 /* start the thread */
 void ArtNetOut::open(quint32 output)
 {
-  Q_UNUSED(output);
-  printf("open\n") ;
-  // check this for error
-  m_thr = new ArtNetThread(m_ip) ;
-  m_thr->start() ;
+    Q_UNUSED(output);
+    printf("open\n") ;
+    // check this for error
+    m_thr = new ArtNetThread(m_ip) ;
+    m_thr->start() ;
 }
 
 /* terminate the thread */
 void ArtNetOut::close(quint32 output)
 {
-  Q_UNUSED(output);
-  printf("close\n") ;
-  if(m_thr == NULL)
-	return ;
+    Q_UNUSED(output);
+    printf("close\n") ;
+    if(m_thr == NULL) {
+        return ;
+    }
 
-  if(m_thr->isRunning()) {
-    m_thr->stop() ;
-  }
-  // wait for thread termination
-  m_thr->wait() ;
+    if(m_thr->isRunning()) {
+        m_thr->stop() ;
+    }
+    // wait for thread termination
+    m_thr->wait() ;
 
-  delete m_thr ;
-  m_thr = NULL ;
-  return ;
+    delete m_thr ;
+    m_thr = NULL ;
+    return ;
 }
 
 /* check if thread is running */
 bool ArtNetOut::isOpen()
 {
-  if(m_thr == NULL)
-	return false ;
+    if(m_thr == NULL) {
+        return false ;
+    }
 
-  return m_thr->isRunning() ;
+    return m_thr->isRunning() ;
 }
 
 /* called on configure */
 void ArtNetOut::configure()
 {
-  ConfigureArtNetOutDialog* conf = new ConfigureArtNetOutDialog(this);
+    ConfigureArtNetOutDialog* conf = new ConfigureArtNetOutDialog(this);
 
-  if (conf->exec() == QDialog::Accepted)
-    {
-      m_ip = conf->ip();			
-      saveSettings();
+    if (conf->exec() == QDialog::Accepted) {
+        m_ip = conf->ip();
+        saveSettings();
     }
 
-  delete conf;
+    delete conf;
 }
 
 
 /* return info string (allows html) */
-QString ArtNetOut::infoText(quint32 output) {
+QString ArtNetOut::infoText(quint32 output)
+{
     if (output == QLCOutPlugin::invalidOutput()) {
         // plugin info
         QString t;
@@ -142,12 +144,9 @@ QString ArtNetOut::infoText(quint32 output) {
         str += QString("<TR>\n");
         str += QString("<TD><B>Status</B></TD>");
         str += QString("<TD>");
-        if (isOpen() == true)
-        {
+        if (isOpen() == true) {
             str += QString("<I>Active</I></TD>");
-        }
-        else
-        {
+        } else {
             str += QString("Not Active</TD>");
         }
         str += QString("</TR>");
@@ -160,8 +159,7 @@ QString ArtNetOut::infoText(quint32 output) {
     // output info
     if(m_thr == NULL) {
         return QString("Node not Running");
-    }
-    else {
+    } else {
         m_thr->getNodeIps();
     }
 
@@ -173,19 +171,18 @@ QString ArtNetOut::infoText(quint32 output) {
 /* set config directory */
 int ArtNetOut::setConfigDirectory(QString dir)
 {
-  m_configDir = dir;
-  return 0;
+    m_configDir = dir;
+    return 0;
 }
 
 /* save settings to config file */
 int ArtNetOut::saveSettings()
 {
-  QString fileName = m_configDir + QString(CONF_FILE);
-  qDebug(fileName.toAscii());
-  QFile file(fileName);
+    QString fileName = m_configDir + QString(CONF_FILE);
+    qDebug(fileName.toAscii());
+    QFile file(fileName);
 
-    if (file.open(QFile::WriteOnly))
-    {
+    if (file.open(QFile::WriteOnly)) {
         QDomDocument dom("ArtNetConfig");
 
         QDomElement root = dom.createElement("ArtNetConfig");
@@ -199,11 +196,9 @@ int ArtNetOut::saveSettings()
 
         file.write(dom.toByteArray());
         file.close();
-    }
-    else
-    {
-      perror("file.open");
-      qDebug("Unable to save ArtNetOut configuration");
+    } else {
+        perror("file.open");
+        qDebug("Unable to save ArtNetOut configuration");
     }
     return errno;
 }
@@ -212,14 +207,14 @@ int ArtNetOut::saveSettings()
 /* load settings from config file */
 int ArtNetOut::loadSettings()
 {
-  QString fileName;
+    QString fileName;
 
-  fileName = m_configDir + QString(CONF_FILE);
+    fileName = m_configDir + QString(CONF_FILE);
 
-  QDomDocument dom = QLCFile::readXML(fileName);
-  createContents(dom);
+    QDomDocument dom = QLCFile::readXML(fileName);
+    createContents(dom);
 
-  return 0;
+    return 0;
 }
 
 /* */
@@ -247,7 +242,8 @@ void ArtNetOut::activate()
     emit configurationChanged();
 }
 
-QStringList ArtNetOut::outputs() {
+QStringList ArtNetOut::outputs()
+{
     QStringList outputs;
     outputs << QString("artnet");
     return outputs;
@@ -258,23 +254,25 @@ QStringList ArtNetOut::outputs() {
  */
 void ArtNetOut::outputDMX(quint32 output, const QByteArray& universe)
 {
-  Q_UNUSED(output);
-  int r ;
+    Q_UNUSED(output);
+    int r ;
 
-  _mutex.lock();
+    _mutex.lock();
 
-  if(m_thr == NULL)
+    if(m_thr == NULL) {
         return ;
- 
-  // write to pipe
-  r = m_thr->write_dmx((uint8_t *) universe.constData(), universe.size() ) ;
-  
-  _mutex.unlock();
+    }
 
-  return ;
+    // write to pipe
+    r = m_thr->write_dmx((uint8_t *) universe.constData(), universe.size() ) ;
+
+    _mutex.unlock();
+
+    return ;
 }
 
-void ArtNetOut::newIp(QString ip) {
+void ArtNetOut::newIp(QString ip)
+{
     m_ip = ip;
     if (m_thr != NULL) {
         m_thr->setIp(ip);
