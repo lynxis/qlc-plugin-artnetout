@@ -34,6 +34,7 @@
 #include <qstring.h>
 #include <qpoint.h>
 #include <qfile.h>
+#include <qdir.h>
 #include <errno.h>
 #include <assert.h>
 
@@ -53,8 +54,9 @@ static QMutex _mutex;
 void ArtNetOut::init()
 {
   m_thr = NULL;
-  m_configDir = QString("~/.qlc/");
+  m_configDir = QString(QDir::homePath()).append("/.qlc/");
   m_ip = "";
+  loadSettings();
 }
 
 ArtNetOut::~ArtNetOut()
@@ -170,30 +172,27 @@ int ArtNetOut::setConfigDirectory(QString dir)
 /* save settings to config file */
 int ArtNetOut::saveSettings()
 {
-  QString s;
-  QString t;
-
   QString fileName = m_configDir + QString(CONF_FILE);
   qDebug(fileName.toAscii());
   QFile file(fileName);
 
-  if (file.open(QFile::WriteOnly))
+    if (file.open(QFile::WriteOnly))
     {
-      QTextStream out(&file);
-      // Comment
-      s = QString("# ArtNetOut Plugin Configuration\n");
-      out << s;
+        QDomDocument dom("ArtNetConfig");
 
-      // Entry type
-      s = QString("Entry = ") + name() + QString("\n");
-      out << s;
-      s = QString("IP = ") + m_ip + QString("\n");
-      out << s;
+        QDomElement root = dom.createElement("ArtNetConfig");
+        dom.appendChild(root);
 
-      out.flush();
-      file.close();
+        QDomElement bindIp = dom.createElement("BindIp");
+        bindIp.appendChild(dom.createTextNode(m_ip));
+        root.appendChild(bindIp);
+
+        QString document = dom.toString();
+
+        file.write(dom.toByteArray());
+        file.close();
     }
-  else
+    else
     {
       perror("file.open");
       qDebug("Unable to save ArtNetOut configuration");
@@ -219,19 +218,20 @@ int ArtNetOut::loadSettings()
 /* */
 void ArtNetOut::createContents(QDomDocument& domDoc)
 {
-  QDomElement root = domDoc.documentElement();
-  if(root.tagName() != "artnetout") {
-    printf("could not read configfile");
-    return;
-  }
-  QDomNode node = root.firstChild();
-  QDomElement property;
-  while(!node.isNull()) {
-    property = node.toElement();
-    if(property.tagName() == "ip") {
-      m_ip = property.text();
+    QDomElement root = domDoc.firstChildElement("ArtNetConfig");
+    if(root.isNull()) {
+        printf("could not read configfile");
+        return;
     }
-  }
+    QDomNode node = root.firstChild();
+    QDomElement property;
+    while(!node.isNull()) {
+        property = node.toElement();
+        if(property.tagName() == "BindIp") {
+            m_ip = property.text();
+        }
+        node = node.nextSibling();
+    }
 }
 
 /* start  */
