@@ -119,7 +119,6 @@ void ArtNetOut::configure()
     }
 
   delete conf;
-
 }
 
 
@@ -206,8 +205,7 @@ int ArtNetOut::saveSettings()
       perror("file.open");
       qDebug("Unable to save ArtNetOut configuration");
     }
-
-  return errno;
+    return errno;
 }
 
 

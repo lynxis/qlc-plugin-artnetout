@@ -53,9 +53,10 @@ int ArtNetThread::startNode() {
     m_node = artnet_new(m_ip.toAscii(), 0) ;
 
   // we need to return an error condition here
-  if ( m_node == NULL)
-    return -1;
-
+  if ( m_node == NULL) {
+      qDebug("ArtNetThread: not running");
+      return -1;
+  }
   artnet_set_node_type(m_node, ARTNET_SRV) ;
   artnet_set_short_name(m_node, "QLC") ;
   artnet_set_long_name(m_node,"Q Light Controller with libartnet") ;
