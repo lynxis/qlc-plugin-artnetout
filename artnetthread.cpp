@@ -63,8 +63,9 @@ int ArtNetThread::startNode() {
   // artnet subclassing - has nothing to do with Ip !
   artnet_set_subnet_addr(m_node, 0) ;
 
-  artnet_set_port_type(m_node, 0, ARTNET_ENABLE_INPUT, ARTNET_PORT_DMX) ;
-  artnet_set_port_addr(m_node, 0, ARTNET_INPUT_PORT, port_addr);
+  artnet_set_port_type(m_node, 0, ARTNET_ENABLE_OUTPUT, ARTNET_PORT_DMX) ;
+  artnet_set_port_addr(m_node, 0, ARTNET_OUTPUT_PORT, port_addr);
+  qDebug("artnode started");
 
   return artnet_start(m_node) ;
 }
@@ -104,10 +105,9 @@ void ArtNetThread::run()
             startNode();
         }
       FD_ZERO(&fds);
-      maxfd = artnet_set_fdset(m_node, &fds) ;
-      FD_SET(m_sd[1], &fds) ;
+      FD_SET(m_sd[1], &fds);
 	  
-      maxfd = maxfd > m_sd[1] ? maxfd : m_sd[1] ;
+      maxfd = m_sd[1] ;
 
       tv.tv_sec = 1;		// one second timeout sounds ok
       tv.tv_usec = 0;
@@ -141,7 +141,6 @@ void ArtNetThread::run()
               else if (FD_ISSET(artnet_get_sd(m_node), &fds) )
                 {
                     // we can ignore packets from artnet.
-                  artnet_read(m_node,0);
                 }
               else 
                 {
