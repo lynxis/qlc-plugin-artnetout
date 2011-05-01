@@ -25,6 +25,7 @@
 
 #include <qthread.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <artnet/artnet.h>
 #include <sys/types.h>
 
@@ -41,6 +42,8 @@ class ArtNetThread : public QThread
   void stop() ;
   void setIp(QString ip);
   int write_dmx(uint8_t *data , int channels) ;
+  /** get ips, where artnet is sending the packets **/
+  QStringList getNodeIps();
 
  private:
   int startNode();

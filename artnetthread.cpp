@@ -188,3 +188,17 @@ void ArtNetThread::stop()
   close(m_sd[0]) ;
   return ;
 }
+
+
+QStringList ArtNetThread::getNodeIps() {
+    QStringList stringlist;
+    artnet_node_config_t config;
+    fd_set *set;
+    Q_UNUSED(config);
+    Q_UNUSED(set);
+
+    if(m_node == NULL) {
+        return stringlist;
+    }
+    return stringlist;
+}

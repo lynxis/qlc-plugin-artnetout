@@ -159,7 +159,16 @@ QString ArtNetOut::infoText(quint32 output) {
         return str;
     }
     // output info
-    return QString("artnet output");
+    if(m_thr == NULL) {
+        return QString("Node not Running");
+    }
+    else {
+        m_thr->getNodeIps();
+    }
+
+    //
+
+    return QString("artnet output is running");
 }
 
 /* set config directory */
