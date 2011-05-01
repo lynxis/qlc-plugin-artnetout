@@ -203,5 +203,10 @@ QStringList ArtNetThread::getNodeIps() {
     if(m_node == NULL) {
         return stringlist;
     }
+    artnet_dump_config(m_node);
+
+    int artnet_fd = artnet_get_sd(m_node);
+    Q_UNUSED(artnet_fd)
+
     return stringlist;
 }
