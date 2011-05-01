@@ -61,7 +61,7 @@ class ArtNetOut : public QLCOutPlugin
   int loadSettings();
 
   void configure();
-  bool canConfigure() { return true; };
+  bool canConfigure() { return true; }
 
   // OutputPlugin methods
   QStringList outputs();
