@@ -32,11 +32,12 @@
 //
 
 int ArtNetThread::stopNode() {
-    qDebug("closing node\n");
-    artnet_stop(m_node);
-    qDebug("destorying node\n");
-    artnet_destroy(m_node);
-
+    if (m_node != NULL) {
+        qDebug("closing node\n");
+        artnet_stop(m_node);
+        qDebug("destorying node\n");
+        artnet_destroy(m_node);
+    }
     return 0;
 }
 
@@ -79,6 +80,9 @@ ArtNetThread::~ArtNetThread()
 
 
 void ArtNetThread::setIp(QString ip) {
+    if(m_ip == ip) {
+        return;
+    }
     m_ip = ip;
     m_configChanged = true;
 }
@@ -90,9 +94,9 @@ void ArtNetThread::run()
   int r, maxfd ;
   fd_set fds;
   struct timeval tv;
-  int loop = 1 ;
-  
-  while (loop) 
+  bool loop = true ;
+
+  while (loop)
     {
         if(m_configChanged) {
             stopNode();
@@ -123,7 +127,7 @@ void ArtNetThread::run()
   
                   // pipe has been closed, exit (and terminate thread)
                   if( r == 0) 
-                    loop = 0 ;
+                    loop = false;
   
                   if (r < 0)
                     printf("artnetout: Read error %s\n", strerror(errno) ) ;
@@ -135,20 +139,20 @@ void ArtNetThread::run()
                 }
               else if (FD_ISSET(artnet_get_sd(m_node), &fds) )
                 {
+                    // we can ignore packets from artnet.
                   artnet_read(m_node,0);
                 }
               else 
                 {
                   // we have an error here
                   printf("artnetout: could not determine set fd, terminating thread\n") ;
-                  loop = 0;
+                  loop = false;
                 }
               break;
         } 
     }
 
   close(m_sd[1]) ;
-  return ; 
 
 }
 int ArtNetThread::write_dmx(uint8_t *data, int channels )
@@ -186,7 +190,6 @@ void ArtNetThread::start ( Priority priority )
 void ArtNetThread::stop() 
 {
   close(m_sd[0]) ;
-  return ;
 }
 
 
