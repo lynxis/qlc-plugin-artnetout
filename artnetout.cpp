@@ -163,8 +163,6 @@ QString ArtNetOut::infoText(quint32 output)
         m_thr->getNodeIps();
     }
 
-    //
-
     return QString("artnet output is running");
 }
 
@@ -207,9 +205,7 @@ int ArtNetOut::saveSettings()
 /* load settings from config file */
 int ArtNetOut::loadSettings()
 {
-    QString fileName;
-
-    fileName = m_configDir + QString(CONF_FILE);
+    QString fileName = m_configDir + QString(CONF_FILE);
 
     QDomDocument dom = QLCFile::readXML(fileName);
     createContents(dom);
