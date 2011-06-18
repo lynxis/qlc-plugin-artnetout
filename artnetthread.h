@@ -53,6 +53,7 @@ private:
     QString m_ip;
     QString m_newgw;
     bool m_configChanged;
+    QByteArray m_oldDmxData; /* save bandwidth - only send artnet if dmxdata changed */
 };
 
 #endif

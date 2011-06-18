@@ -47,6 +47,7 @@ int ArtNetThread::startNode()
     // we prob want to make this configurable at some stage
     int port_addr = 0 ;
     m_configChanged = false;
+    m_oldDmxData.clear();
 
     // new artnet node
     if (m_ip == QString("")) {
@@ -161,7 +162,12 @@ void ArtNetThread::run()
 int ArtNetThread::write_dmx(uint8_t *data, int channels )
 {
     int r ;
-
+    QByteArray newData((const char*)data, channels);
+    // save bandwidth
+    if(m_oldDmxData == newData) {
+        return 0;
+    }
+    m_oldDmxData = newData;
     // write to pipe
     r = write(m_sd[0], data, sizeof(uint8_t) * channels) ;
 
