@@ -25,5 +25,5 @@ HEADERS += ../interfaces/qlcoutplugin.h
 
 PRO_FILE = artnetout.pro
 
-target.path = $$INSTALLROOT/$$INPUTPLUGINDIR
+target.path = $$INSTALLROOT/$$OUTPUTPLUGINDIR
 INSTALLS   += target
