@@ -68,6 +68,8 @@ int ArtNetThread::startNode()
 
     artnet_set_port_type(m_node, 0, ARTNET_ENABLE_OUTPUT, ARTNET_PORT_DMX) ;
     artnet_set_port_addr(m_node, 0, ARTNET_OUTPUT_PORT, port_addr);
+    // broadcast only if there are more than 10 artnet nodes
+    artnet_set_bcast_limit(m_node, 10);
     qDebug("artnode started");
 
     return artnet_start(m_node) ;
