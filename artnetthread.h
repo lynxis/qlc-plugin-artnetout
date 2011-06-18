@@ -29,8 +29,11 @@
 #include <artnet/artnet.h>
 #include <sys/types.h>
 
+class QTimer;
+
 class ArtNetThread : public QThread
 {
+    Q_OBJECT
 
 public:
     ArtNetThread(QString ip = "");
@@ -45,6 +48,8 @@ public:
     /** get ips, where artnet is sending the packets **/
     QStringList getNodeIps();
 
+public slots:
+    void searchDevices();
 private:
     int startNode();
     int stopNode();
@@ -54,6 +59,8 @@ private:
     QString m_newgw;
     bool m_configChanged;
     QByteArray m_oldDmxData; /* save bandwidth - only send artnet if dmxdata changed */
+    QTimer* m_timer;
+
 };
 
 #endif

@@ -27,6 +27,8 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include <QTimer>
+
 //
 // Class implementation
 //
@@ -72,14 +74,19 @@ int ArtNetThread::startNode()
     artnet_set_port_addr(m_node, 0, ARTNET_OUTPUT_PORT, port_addr);
     // broadcast only if there are more than 10 artnet nodes
     artnet_set_bcast_limit(m_node, 10);
-    qDebug("artnode started");
 
-    return artnet_start(m_node) ;
+    qDebug("artnode started");
+    return artnet_start(m_node);
 }
 
 ArtNetThread::ArtNetThread(QString ip): m_ip(ip), m_newgw(ip), m_configChanged(false)
 {
     startNode();
+    m_timer = new QTimer(this);
+
+    artnet_send_poll(m_node, NULL, ARTNET_TTM_DEFAULT);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(searchDevices()));
+    m_timer->start(60000);
 }
 
 ArtNetThread::~ArtNetThread()
@@ -87,6 +94,11 @@ ArtNetThread::~ArtNetThread()
     stopNode();
 }
 
+
+void ArtNetThread::searchDevices()
+{
+    artnet_send_poll(m_node, NULL, ARTNET_TTM_DEFAULT);
+}
 
 void ArtNetThread::setIp(QString ip)
 {
@@ -104,13 +116,14 @@ void ArtNetThread::run()
     int r, maxfd ;
     fd_set fds;
     struct timeval tv;
-    bool loop = true ;
+    bool loop = true;
 
     while (loop) {
         if(m_configChanged) {
             stopNode();
             startNode();
         }
+
         FD_ZERO(&fds);
         maxfd = artnet_set_fdset(m_node, &fds);
         FD_SET(m_sd[1], &fds);
@@ -118,7 +131,6 @@ void ArtNetThread::run()
 
         tv.tv_sec = 1;		// one second timeout sounds ok
         tv.tv_usec = 0;
-        // TODO dont run faster than ...
         switch (select(maxfd+1, &fds, NULL, NULL, &tv) ) {
         case 0:
             // time out
@@ -191,7 +203,7 @@ void ArtNetThread::start ( Priority priority )
     }
 
     // isn't there a super keyword ?
-    QThread::start(priority) ;
+    QThread::start(priority);
 
 }
 
